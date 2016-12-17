@@ -1,0 +1,16 @@
+{
+  "name": "holdem",
+  "version": "1.0.0",
+  "description": "NL Texas Hold'em game",
+  "main": "server.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0",
+    "socket.io": "^1.5.0",
+    "striptags": "^2.1.1"
+  }
+}

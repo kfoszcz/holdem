@@ -1,0 +1,4 @@
+node_modules/
+public/ubuntu/
+art/
+npm-debug.log*

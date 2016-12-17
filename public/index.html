@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Texas Hold'em</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="card-styles.css">
+    <script type="text/javascript" src="jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="js.cookie.js"></script>
+    <script type="text/javascript" src="ui.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="main">
+        <div class="lang">
+            <select name="language" id="language">
+                <option value="pl">Polski</option>
+                <option selected value="en">English</option>
+            </select>
+        </div>
+        <div class="bet-window" style="display: none;">
+            <div class="bet-buttons" id="buttons-preflop">
+                <div class="button shortcut" id="button-p1">2.2x</div>
+                <div class="button shortcut" id="button-p2">2.5x</div>
+                <div class="button shortcut" id="button-p3">3x</div>
+                <div class="button shortcut" id="button-p4">4x</div>
+                <div class="button shortcut" id="button-p5">Max</div>
+            </div>
+            <div class="bet-buttons" id="buttons-postflop">
+                <div class="button shortcut" id="button-f1">30%</div>
+                <div class="button shortcut" id="button-f2">50%</div>
+                <div class="button shortcut" id="button-f3">70%</div>
+                <div class="button shortcut" id="button-f4">100%</div>
+                <div class="button shortcut" id="button-f5">Max</div>
+            </div>
+            <div class="bet-slider">
+                <input id="betnumber" type="text">
+                <input id="betsize" type="range" name="betsize" min="80" max="200" step="1" value="0">
+            </div>
+            <div class="bet-buttons">
+                <div class="button action" id="button-fold">Fold</div>
+                <div class="button action" id="button-call"><span id="call-text"></span><span id="call-value"></span></div>
+                <div class="button action" id="button-raise"><span id="raise-text"></span><span id="raise-value"></span></div>
+            </div>
+        </div>
+        <div class="table">
+            <div id="username-request">
+                <label for="username">Nick:</label>
+                <input type="text" name="username" id="username">
+            </div>
+            <div class="button" id="ready-button">Ready</div>
+            <div id="waiting">Waiting for start...</div>
+            <div class="game pot-total"><span id="pot-text"></span>: <span id="pot">$0</span></div>
+            <div class="game pots" id="pots"></div>
+            <div class="board">
+                <div class="card empty" id="board-0"></div>
+                <div class="card empty" id="board-1"></div>
+                <div class="card empty" id="board-2"></div>
+                <div class="card empty" id="board-3"></div>
+                <div class="card empty" id="board-4"></div>
+            </div>
+            <div class="player" id="player-0">
+                <div class="hand"></div>
+                <div class="nick"></div>
+                <div class="money"></div>
+                <div class="bet"></div>
+                <div class="button seat">Sit here</div>
+                <div class="dealer-button">D</div>
+            </div>  
+            <div class="player" id="player-1">
+                <div class="hand"></div>
+                <div class="nick"></div>
+                <div class="money"></div>
+                <div class="bet"></div>
+                <div class="button seat">Sit here</div>
+                <div class="dealer-button">D</div>
+            </div>
+            <div class="player" id="player-2">
+                <div class="hand"></div>
+                <div class="nick"></div>
+                <div class="money"></div>
+                <div class="bet"></div>
+                <div class="button seat">Sit here</div>
+                <div class="dealer-button">D</div>
+            </div>  
+            <div class="player" id="player-3">
+                <div class="hand"></div>
+                <div class="nick"></div>
+                <div class="money"></div>
+                <div class="bet"></div>
+                <div class="button seat">Sit here</div>
+                <div class="dealer-button">D</div>
+            </div> 
+            <div class="player" id="player-4">
+                <div class="hand"></div>
+                <div class="nick"></div>
+                <div class="money"></div>
+                <div class="bet"></div>
+                <div class="button seat">Sit here</div>
+                <div class="dealer-button">D</div>
+            </div>  
+            <div class="player" id="player-5">
+                <div class="hand"></div>
+                <div class="nick"></div>
+                <div class="money"></div>
+                <div class="bet"></div>
+                <div class="button seat">Sit here</div>
+                <div class="dealer-button">D</div>
+            </div> 
+            <div class="player" id="player-6">
+                <div class="hand"></div>
+                <div class="nick"></div>
+                <div class="money"></div>
+                <div class="bet"></div>
+                <div class="button seat">Sit here</div>
+                <div class="dealer-button">D</div>
+            </div>  
+            <div class="player" id="player-7">
+                <div class="hand"></div>
+                <div class="nick"></div>
+                <div class="money"></div>
+                <div class="bet"></div>
+                <div class="button seat">Sit here</div>
+                <div class="dealer-button">D</div>
+            </div>
+            <div class="player" id="player-8">
+                <div class="hand"></div>
+                <div class="nick"></div>
+                <div class="money"></div>
+                <div class="bet"></div>
+                <div class="button seat">Sit here</div>
+                <div class="dealer-button">D</div>
+            </div>            
+        </div>
+    </div><div class="sidebar">
+        <div class="scorecard">
+            <h3>Info</h3>
+            <div class="game blinds"><span id="blinds-text"></span> <span id="blinds-now"></span></div>
+            <div class="game blinds-next"><span id="blinds-up"></span> <span id="blinds-next"></span></div>
+        </div>
+        <div class="chat">
+            <h3>Chat</h3>
+            <div class="scrollable" id="chat-history"></div>
+            <input type="text" name="chat-input" id="chat-input">
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
