@@ -1,9 +1,12 @@
 var Player = require('./Player.js');
 var Deck = require('./Deck.js');
 var Card = require('./Card.js');
+var Combination = require('./Combination.js');
 
 function Game(players, options) {
 	this.id = 0;
+	this.equities = true; // calculate equities in all-in showdown situation
+	this.equitiesN = 100000; // max equity calculation iterations
 	this.players = players;
 	this.options = options;
 	this.paused = true;
@@ -12,6 +15,7 @@ function Game(players, options) {
 	this.seats = []; // user for picking a random player
 
 	this.deck = null;
+	this.equityDeck = new Deck(1);
 	this.phase = Game.PREFLOP;
 	this.current = null;
 	this.dealer = null;
@@ -217,6 +221,87 @@ Game.prototype.makeMove = function(move) {
 	return { success: true };
 }
 
+Game.prototype.initEquityDeck = function() {
+	this.equityDeck.shuffle();
+	this.players.filter(inHand).forEach(function(player){
+		this.equityDeck.drawCard(player.cards[0]);
+		this.equityDeck.drawCard(player.cards[1]);
+	}, this);
+	for (var i = 0; i < this.board.length; i++)
+		this.equityDeck.drawCard(this.board[i]);
+}
+
+Game.prototype.getEquityWinners = function() {
+	var best = 0;
+	var winners = [];
+
+	for (var i = 0; i < this.players.length; i++) {
+		if (this.players[i] && !this.players[i].folded) {
+			this.players[i].value = this.players[i].hand.eval();
+			if (this.players[i].value > best) {
+				winners = [this.players[i]];
+				best = this.players[i].value;
+			}
+			else if (this.players[i].value == best) {
+				winners.push(this.players[i]);
+			}
+		}
+	}
+
+	return winners;
+}
+
+Game.prototype.calculateEquities = function() {
+	console.log(logTime() + 'Calculating equities...');
+	this.initEquityDeck();
+	var count = 0;
+	var size = 5 - this.board.length;
+	var winners = [];
+	for (var i = 0; i < this.players.length; i++)
+		if (this.players[i])
+			this.players[i].equity = 0;
+
+	var iter = new Combination(this.equityDeck.marker, this.equityDeck.deck.length, size);
+	do {
+
+		for (var i = 0; i < this.players.length; i++) {
+			if (this.players[i] && !this.players[i].folded) {
+				this.players[i].hand.clear();
+				this.players[i].hand.addCard(this.players[i].cards[0].code);
+				this.players[i].hand.addCard(this.players[i].cards[1].code);
+				for (var j = 0; j < this.board.length; j++)
+					this.players[i].hand.addCard(this.board[j].code);
+				for (var j = 0; j < size; j++)
+					this.players[i].hand.addCard(this.equityDeck.deck[iter.index[j]].code);
+			}
+		}
+
+		winners = this.getEquityWinners();
+		for (var i = 0; i < winners.length; i++)
+			winners[i].equity += 1 / winners.length;
+
+		count++;
+
+	} while (iter.next() && count < this.equitiesN);
+
+	this.players.filter(inHand).forEach(function(player){
+		player.equity = Math.round(player.equity * 100 / count);
+	}, this);
+
+	console.log(logTime() + '**Count: ' + count);
+}
+
+Game.prototype.getEquities = function() {
+	var result = [];
+	for (var i = 0; i < this.players.length; i++) {
+		if (this.players[i] && !this.players[i].folded)
+			result.push(this.players[i].equity);
+		else
+			result.push(null);
+	}
+	return result;
+}
+
 Game.prototype.updateWinners = function() {
 	this.winners = [];
 	if (this.pots[this.potIndex] == 0)
@@ -271,14 +356,18 @@ Game.prototype.dealBoard = function() {
 	else
 		this.board.push(this.deck.draw(1)[0]);
 	this.phase++;
+
 	if (this.phase == Game.RIVER) {
 		this.players.filter(inHand).forEach(function(player) {
+			player.hand.clear();
+			player.hand.addCard(player.cards[0].code);
+			player.hand.addCard(player.cards[1].code);
 			for (var i = 0; i < 5; i++)
 				player.hand.addCard(this.board[i].code);
 			player.value = player.hand.eval();
 		}, this);
 		if (this.request & Game.ALLIN)
-			this.request = Game.WINNERS;
+			this.request |= Game.WINNERS;
 	}
 	this.initBettingOrbit();
 }
@@ -440,6 +529,11 @@ Game.prototype.getGameState = function(playerSeat) {
 	}
 
 	return result;
+}
+
+function logTime() {
+	var d = new Date();
+	return (d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + ' ');
 }
 
 var allInNow = function(player) {

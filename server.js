@@ -136,7 +136,7 @@ function moveCallback() {
 					}
 				});
 			}
-		}, 500);
+		}, 400);
 	}
 
 	if (table.game.request & Game.PHASE) {
@@ -157,8 +157,19 @@ function moveCallback() {
 		});
 	}
 
+	if (table.game.request & Game.ALLIN) {
+		setTimeout(function() {
+			if (table.game.equities) {
+				table.game.calculateEquities();
+				io.emit('updateEquities', table.game.getEquities());
+			}
+		}, 500);
+	}
+
 	if (table.game.request & Game.WINNERS) {
 		table.game.request -= Game.WINNERS;
+		if (table.game.request & Game.ALLIN)
+			table.game.request -= Game.ALLIN;
 		table.game.updateWinners();
 
 		// debug
@@ -191,9 +202,10 @@ function moveCallback() {
 	}
 
 	if (table.game.request & Game.ALLIN) {
+		var tout = (table.game.phase == Game.PREFLOP) ? 3000 : 2000;
 		setTimeout(function() {
 			nextPhase();
-		}, 2000);
+		}, tout);
 	}
 
 }
@@ -263,6 +275,7 @@ io.on('connection', function(socket){
 
 			// player has reconnected
 			if (player && gameId === table.game.id && seat === player.seat && !player.connected) {
+				socket.name = name;
 				player.socket = socket;
 				player.connected = true;
 				table.game.paused = false;

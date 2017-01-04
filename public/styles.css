@@ -90,7 +90,10 @@ div.table {
 div.hand {
     text-align: center;
     position: absolute;
-    left: calc(50% - 54px);
+    /*left: calc(50% - 54px);*/
+    margin: 0 auto;
+    left: 0;
+    right: 0;
     top: -60px;
     overflow: hidden;
 }
@@ -183,6 +186,15 @@ div.bet {
     padding: 5px;
 }
 
+div.equity {
+    display: none;
+    position: absolute;
+    font-size: 0.8em;
+    background: rgba(170, 179, 35, 0.7);
+    border-radius: 5px;
+    padding: 5px;
+}
+
 div.blinds {
     padding-top: 10px;
     font-size: 0.6em;
@@ -246,8 +258,11 @@ div#player-8 {
     right: 12%;
 }
 
-div#player-0 div.bet {
+div#player-0 div.bet, div#player-0 div.equity {
     top: -100px;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
 }
 
 div#player-0 div.dealer-button {
@@ -255,25 +270,31 @@ div#player-0 div.dealer-button {
     left: -10%;
 }
 
-div#player-1 div.bet {
+div#player-1 div.bet, div#player-1 div.equity {
     top: -80px;
     right: -20%;
 }
 
 div#player-1 div.dealer-button {
     top: -90px;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
 }
 
-div#player-2 div.bet {
+div#player-2 div.bet, div#player-2 div.equity {
     top: -40px;
     right: -30%;
 }
 
 div#player-2 div.dealer-button {
     right: -20%;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
 }
 
-div#player-3 div.bet {
+div#player-3 div.bet, div#player-3 div.equity {
     top: 10px;
     right: -30%;
 }
@@ -283,8 +304,11 @@ div#player-3 div.dealer-button {
     right: -25%;
 }
 
-div#player-4 div.bet {
+div#player-4 div.bet, div#player-4 div.equity {
     top: 130%;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
 }
 
 div#player-4 div.dealer-button {
@@ -292,8 +316,11 @@ div#player-4 div.dealer-button {
     left: 10%;
 }
 
-div#player-5 div.bet {
+div#player-5 div.bet, div#player-5 div.equity {
     top: 130%;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
 }
 
 div#player-5 div.dealer-button {
@@ -301,7 +328,7 @@ div#player-5 div.dealer-button {
     right: 10%;
 }
 
-div#player-6 div.bet {
+div#player-6 div.bet, div#player-6 div.equity {
     top: 10px;
     left: -30%;
 }
@@ -311,22 +338,28 @@ div#player-6 div.dealer-button {
     left: -25%;
 }
 
-div#player-7 div.bet {
+div#player-7 div.bet, div#player-7 div.equity {
     top: -40px;
     left: -30%;
 }
 
 div#player-7 div.dealer-button {
     left: -20%;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
 }
 
-div#player-8 div.bet {
+div#player-8 div.bet, div#player-8 div.equity {
     top: -80px;
     left: -20%;
 }
 
 div#player-8 div.dealer-button {
     top: -90px;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
 }
 
 div.button.shortcut {

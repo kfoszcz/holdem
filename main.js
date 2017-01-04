@@ -16,11 +16,16 @@ function printCards(cards) {
 	return result;
 }
 
+function logTime() {
+	var d = new Date();
+	return (d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + ' ');
+}
+
 var deck = new Deck(1);
 deck.shuffle();
 
-var A = [deck.drawCard(new Card(3, 3)), deck.drawCard(new Card(2, 2))];
-var B = [deck.drawCard(new Card(3, 13)), deck.drawCard(new Card(2, 14))];
+var A = [deck.drawCard(new Card(3, 12)), deck.drawCard(new Card(2, 2))];
+var B = [deck.drawCard(new Card(3, 11)), deck.drawCard(new Card(1, 14))];
 
 console.log(printCards(A) + ' vs ' + printCards(B));
 
@@ -37,6 +42,8 @@ var looses = 0;
 var splits = 0;
 var all = 0;
 var i;
+
+console.log(logTime() + 'START');
 
 do {
 	handA.clear();
@@ -60,6 +67,8 @@ do {
 	else splits++;
 	
 } while (iter.next());
+
+console.log(logTime() + 'END');
 
 all = wins + looses + splits;
 

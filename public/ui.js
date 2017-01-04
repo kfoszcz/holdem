@@ -12,6 +12,8 @@ var pot = 0;
 var phase = 0;
 var prevBet = 0;
 var blindsUpIn = 0;
+var smallBlind;
+var bigBlind;
 var playersInGame = 0;
 var started = false;
 var lang = 'en';
@@ -48,15 +50,16 @@ $(document).ready(function(){
         $('#betsize').val(value);
     });
 
-    $(document).on('input change', '#betsize', function(){
+    $(document).on('input change', '#betsize', function(e){
         $('span#raise-value').text(formatNumber(this.value));
         $('#betnumber').val(this.value);
     });
 
     $('#betsize').on('wheel', function(e){
         var delta = e.originalEvent.deltaY;
-        if (delta > 0) this.stepDown();
-        else this.stepUp();
+        var value = parseInt(this.value);
+        if (delta > 0) $('#betsize').val(Math.ceil(value / smallBlind - 1) * smallBlind);
+        else $('#betsize').val(Math.floor(value / smallBlind + 1) * smallBlind);
         $(this).trigger('change');
     });
 
@@ -158,6 +161,7 @@ $(document).ready(function(){
     socket.on('handWinner', handWinner);
     socket.on('updateStack', updateStack);
     socket.on('updateDealer', updateDealer);
+    socket.on('updateEquities', updateEquities);
 
     socket.on('updateBlinds', updateBlinds);
     socket.on('updateBlindsUp', updateBlindsUp);
@@ -259,6 +263,13 @@ function gameState(state, seat, name) {
 	}
 }
 
+function updateEquities(equities) {
+	for (var i = 0; i < equities.length; i++)
+		if (equities[i] !== null) {
+			$('div#player-' + rotate(i) + ' .equity').text(equities[i] + '%').show();
+		}
+}
+
 function updateDealer(player) {
 	$('.dealer-button').hide();
 	if (player != null)
@@ -266,6 +277,8 @@ function updateDealer(player) {
 }
 
 function updateBlinds(blinds, next) {
+	smallBlind = blinds[0];
+	bigBlind = blinds[1];
 	var txt = formatNumber(blinds[0]) + ' / ' + formatNumber(blinds[1]);
 	if (blinds[2] > 0)
 		txt += ' ante ' + formatNumber(blinds[2]);
@@ -301,6 +314,7 @@ function seatOK(seat, name) {
 }
 
 function receiveHand(cards) {
+	$('.equity').hide();
 	phase = 0;
 	clearBoard();
 
@@ -403,6 +417,7 @@ function endGame() {
 	clearBoard();
 	$('#pot').text(formatNumber(0));
 	$('.pots').text('');
+	$('.equity').hide();
 	$('.game').hide();
 	$('.dealer-button').hide();
 	$('.player .hand').empty();

@@ -8,6 +8,7 @@ function Player(socket, name) {
 	this.connected = true;
 	this.ready = false;
 	this.won = [];
+	this.equity = 0;
 
 	this.cards = [];
 	this.hand = new Hand();
@@ -28,7 +29,6 @@ Player.prototype.receiveHand = function(cards) {
 	this.cards = [];
 	for (var i = 0; i < cards.length; i++) {
 		this.cards.push(cards[i]);
-		this.hand.addCard(cards[i].code);
 	}
 }
 
