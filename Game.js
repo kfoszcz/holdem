@@ -6,7 +6,7 @@ var Combination = require('./Combination.js');
 function Game(players, options) {
 	this.id = 0;
 	this.equities = true; // calculate equities in all-in showdown situation
-	this.equitiesN = 100000; // max equity calculation iterations
+	this.equitiesN = 10000; // max equity calculation iterations
 	this.players = players;
 	this.options = options;
 	this.paused = true;
@@ -253,40 +253,76 @@ Game.prototype.getEquityWinners = function() {
 
 Game.prototype.calculateEquities = function() {
 	console.log(logTime() + 'Calculating equities...');
-	this.initEquityDeck();
 	var count = 0;
 	var size = 5 - this.board.length;
 	var winners = [];
+	
 	for (var i = 0; i < this.players.length; i++)
-		if (this.players[i])
-			this.players[i].equity = 0;
+			if (this.players[i])
+				this.players[i].equity = 0;
 
-	var iter = new Combination(this.equityDeck.marker, this.equityDeck.deck.length, size);
-	do {
+	if (this.board.length == 0) { // preflop monte carlo
 
-		for (var i = 0; i < this.players.length; i++) {
-			if (this.players[i] && !this.players[i].folded) {
-				this.players[i].hand.clear();
-				this.players[i].hand.addCard(this.players[i].cards[0].code);
-				this.players[i].hand.addCard(this.players[i].cards[1].code);
-				for (var j = 0; j < this.board.length; j++)
-					this.players[i].hand.addCard(this.board[j].code);
-				for (var j = 0; j < size; j++)
-					this.players[i].hand.addCard(this.equityDeck.deck[iter.index[j]].code);
+		for (var it = 0; it < this.equitiesN; it++) {
+
+			this.initEquityDeck();
+			for (var i = 0; i < this.players.length; i++) {
+				if (this.players[i] && !this.players[i].folded) {
+					this.players[i].hand.clear();
+					this.players[i].hand.addCard(this.players[i].cards[0].code);
+					this.players[i].hand.addCard(this.players[i].cards[1].code);
+					for (var j = 0; j < this.board.length; j++)
+						this.players[i].hand.addCard(this.board[j].code);
+					for (var j = 0; j < size; j++)
+						this.players[i].hand.addCard(this.equityDeck.deck[this.equityDeck.marker + j].code);
+				}
 			}
+
+			winners = this.getEquityWinners();
+			for (var i = 0; i < winners.length; i++)
+				winners[i].equity += 1 / winners.length;
+
+			count++;
+
 		}
 
-		winners = this.getEquityWinners();
-		for (var i = 0; i < winners.length; i++)
-			winners[i].equity += 1 / winners.length;
+	}
 
-		count++;
+	else { // postflop all combos
 
-	} while (iter.next() && count < this.equitiesN);
+		this.initEquityDeck();
 
-	this.players.filter(inHand).forEach(function(player){
-		player.equity = Math.round(player.equity * 100 / count);
-	}, this);
+		var iter = new Combination(this.equityDeck.marker, this.equityDeck.deck.length, size);
+		do {
+
+			for (var i = 0; i < this.players.length; i++) {
+				if (this.players[i] && !this.players[i].folded) {
+					this.players[i].hand.clear();
+					this.players[i].hand.addCard(this.players[i].cards[0].code);
+					this.players[i].hand.addCard(this.players[i].cards[1].code);
+					for (var j = 0; j < this.board.length; j++)
+						this.players[i].hand.addCard(this.board[j].code);
+					for (var j = 0; j < size; j++)
+						this.players[i].hand.addCard(this.equityDeck.deck[iter.index[j]].code);
+				}
+			}
+
+			winners = this.getEquityWinners();
+			for (var i = 0; i < winners.length; i++)
+				winners[i].equity += 1 / winners.length;
+
+			count++;
+
+		} while (iter.next());
+
+	}
+
+	for (var i = 0; i < this.players.length; i++) {
+		if (this.players[i] && !this.players[i].folded) {
+			console.log(logTime() + '**Equity #' + i + ' is: ' + this.players[i].equity);
+			this.players[i].equity = Math.round(this.players[i].equity * 100 / count);
+		}
+	}
 
 	console.log(logTime() + '**Count: ' + count);
 }

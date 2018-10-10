@@ -634,8 +634,8 @@ function decodeHand(value) {
 
 function dealsText(num) {
 	if (lang == 'en') {
-		if (num == 1) return 'In 1 deal';
-		else return 'In ' + num + ' deals';
+		if (num == 1) return 'In 1 hand';
+		else return 'In ' + num + ' hands';
 	}
 	else if (lang == 'pl') {
 		if (num == 1) return 'Za 1 rozdanie';

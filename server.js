@@ -11,7 +11,6 @@ var Game = require('./Game.js')
 var Options = require('./Options.js');
 
 app.use(express.static(__dirname + '/public'));
-app.use(express.static(__dirname + '/public/img'));
 
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html');
@@ -21,7 +20,7 @@ http.listen(3000, function(){
 	console.log('Listening on 3000');
 });
 
-var structure = 'heads-up-turbo';
+var structure = 'tourney-turbo';
 var table = new Table(1);
 
 function removeBusted() {
@@ -136,7 +135,7 @@ function moveCallback() {
 					}
 				});
 			}
-		}, 400);
+		}, 100);
 	}
 
 	if (table.game.request & Game.PHASE) {
@@ -163,7 +162,7 @@ function moveCallback() {
 				table.game.calculateEquities();
 				io.emit('updateEquities', table.game.getEquities());
 			}
-		}, 500);
+		}, 200);
 	}
 
 	if (table.game.request & Game.WINNERS) {
@@ -202,7 +201,7 @@ function moveCallback() {
 	}
 
 	if (table.game.request & Game.ALLIN) {
-		var tout = (table.game.phase == Game.PREFLOP) ? 3000 : 2000;
+		var tout = (table.game.phase == Game.PREFLOP) ? 2000 : 1500;
 		setTimeout(function() {
 			nextPhase();
 		}, tout);
@@ -327,18 +326,13 @@ io.on('connection', function(socket){
 
 	socket.on('sendMove', function(move){
 		var player = table.findPlayerById(socket.id);
-		if (player.id == table.game.current.id) {
+		if (player && player.socket.id == table.game.current.socket.id) {
 			processMove(socket, move);
 		}
 	});
 
 	// chat
 	socket.on('chatMsg', function(msg){
-		if (msg[0] === ':') {
-			var args = msg.slice(1).split(' ', 2);
-			executeCmd(socket, args[0], args[1]);
-			return;
-		}
 		var sender = (socket.name != null) ? socket.name : 'Guest';
 		striptags(msg);
 		console.log('Message from ' + sender + ': ' + msg);

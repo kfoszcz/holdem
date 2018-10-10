@@ -24,8 +24,8 @@ function logTime() {
 var deck = new Deck(1);
 deck.shuffle();
 
-var A = [deck.drawCard(new Card(3, 12)), deck.drawCard(new Card(2, 2))];
-var B = [deck.drawCard(new Card(3, 11)), deck.drawCard(new Card(1, 14))];
+var A = [deck.drawCard(new Card(3, 14)), deck.drawCard(new Card(2, 10))];
+var B = [deck.drawCard(new Card(1, 2)), deck.drawCard(new Card(0, 2))];
 
 console.log(printCards(A) + ' vs ' + printCards(B));
 
@@ -41,6 +41,7 @@ var wins = 0;
 var looses = 0;
 var splits = 0;
 var all = 0;
+var count = 0;
 var i;
 
 console.log(logTime() + 'START');
@@ -65,13 +66,14 @@ do {
 	if (valueA > valueB) wins++;
 	else if (valueA < valueB) looses++;
 	else splits++;
+	count++;
 	
-} while (iter.next());
+} while (iter.next() && count <= 200000);
 
 console.log(logTime() + 'END');
 
 all = wins + looses + splits;
 
-console.log('  Win: ' + Math.round(wins / all * 1000) / 10);
-console.log('Loose: ' + Math.round(looses / all * 1000) / 10);
-console.log('Split: ' + Math.round(splits / all * 1000) / 10);
+console.log('  Win: ' + Math.round(wins / count * 1000) / 10);
+console.log('Loose: ' + Math.round(looses / count * 1000) / 10);
+console.log('Split: ' + Math.round(splits / count * 1000) / 10);
