@@ -1,8 +1,8 @@
-Options = {
-	'shortstack': {
-		startingStack: 500,
-		blindsUp: 10,
-		blinds: [
+{
+	"shortstack": {
+		"startingStack": 500,
+		"blindsUp": 10,
+		"blinds": [
 			[25, 50, 5],
 			[40, 80, 8],
 			[75, 150, 15],
@@ -14,10 +14,10 @@ Options = {
 			[2000, 4000, 600]
 		]
 	},
-	'heads-up-turbo': {
-		startingStack: 1500,
-		blindsUp: 10,
-		blinds: [
+	"heads-up-turbo": {
+		"startingStack": 1500,
+		"blindsUp": 10,
+		"blinds": [
 			[10, 20, 0],
 			[15, 30, 0],
 			[20, 40, 0],
@@ -37,10 +37,10 @@ Options = {
 			[500, 1000, 0]
 		]
 	},
-	'heads-up-normal': {
-		startingStack: 1500,
-		blindsUp: 20,
-		blinds: [
+	"heads-up-normal": {
+		"startingStack": 1500,
+		"blindsUp": 20,
+		"blinds": [
 			[10, 20, 0],
 			[15, 30, 0],
 			[20, 40, 0],
@@ -60,10 +60,10 @@ Options = {
 			[500, 1000, 0]
 		]
 	},
-	'tourney-turbo': {
-		startingStack: 3000,
-		blindsUp: 10,
-		blinds: [
+	"tourney-turbo": {
+		"startingStack": 3000,
+		"blindsUp": 10,
+		"blinds": [
 			[10, 20, 2],
 			[15, 30, 3],
 			[20, 40, 4],
@@ -103,10 +103,10 @@ Options = {
 			[8000, 16000, 4000]
 		]
 	},
-	'tourney-deep-normal': {
-		startingStack: 5000,
-		blindsUp: 20,
-		blinds: [
+	"tourney-deep-normal": {
+		"startingStack": 5000,
+		"blindsUp": 20,
+		"blinds": [
 			[15, 30, 4],
 			[20, 40, 5],
 			[25, 50, 6],
@@ -127,11 +127,11 @@ Options = {
 			[600, 1200, 90],
 			[700, 1400, 100],
 			[800, 1600, 125],
-			[900, 1800, 150]
+			[900, 1800, 150],
 			[1000, 2000, 175],
 			[1250, 2500, 200],
 			[1500, 3000, 225],
-			[1750, 3500, 250]
+			[1750, 3500, 250],
 			[2000, 4000, 315],
 			[2500, 5000, 375],
 			[3000, 6000, 500],
@@ -145,10 +145,10 @@ Options = {
 			[10000, 20000, 2000]
 		]
 	},
-	'tourney-hyper': {
-		startingStack: 2000,
-		blindsUp: 7,
-		blinds: [
+	"tourney-hyper": {
+		"startingStack": 2000,
+		"blindsUp": 7,
+		"blinds": [
 			[10, 20, 2],
 			[15, 30, 3],
 			[20, 40, 4],
@@ -170,18 +170,16 @@ Options = {
 			[750, 1500, 600],
 			[900, 1800, 750],
 			[1200, 2400, 900],
-			[1500, 3000, 1200],
+			[1500, 3000, 1200]
 		]
 	},
-	'allin-shootout': {
-		startingStack: 100,
-		blindsUp: 3,
-		blinds: [
+	"allin-shootout": {
+		"startingStack": 100,
+		"blindsUp": 3,
+		"blinds": [
 			[1000, 2000, 500],
 			[1500, 3000, 1000],
 			[2000, 4000, 1500]
 		]
 	}
 }
-
-module.exports = Options;

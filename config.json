@@ -1,0 +1,12 @@
+{
+	"blind-structure": "tourney-turbo",
+	"timeouts": {
+		"update-pots": 400,
+		"update-equities": 500,
+		"next-phase": 1000,
+		"next-phase-allin": 1500,
+		"next-phase-allin-pre": 2000,
+		"show-winner": 1500,
+		"show-winner-sidepot-interval": 500
+	}
+}

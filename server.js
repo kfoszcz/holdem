@@ -8,7 +8,8 @@ var Table = require('./Table.js');
 var Card = require('./Card.js');
 var Player = require('./Player.js');
 var Game = require('./Game.js')
-var Options = require('./Options.js');
+var structures = require('./structures.json');
+var config = require('./config.json')
 
 app.use(express.static(__dirname + '/public'));
 
@@ -20,7 +21,7 @@ http.listen(3000, function(){
 	console.log('Listening on 3000');
 });
 
-var structure = 'tourney-turbo';
+var structure = config["blind-structure"];
 var table = new Table(1);
 
 function removeBusted() {
@@ -135,7 +136,7 @@ function moveCallback() {
 					}
 				});
 			}
-		}, 100);
+		}, config.timeouts['update-pots']);
 	}
 
 	if (table.game.request & Game.PHASE) {
@@ -162,7 +163,7 @@ function moveCallback() {
 				table.game.calculateEquities();
 				io.emit('updateEquities', table.game.getEquities());
 			}
-		}, 200);
+		}, config.timeouts['update-equities']);
 	}
 
 	if (table.game.request & Game.WINNERS) {
@@ -183,10 +184,10 @@ function moveCallback() {
 				io.emit('showValue', player.seat, player.value);
 			}
 		});
-		var tm = 1500;
+		var tm = config.timeouts['show-winner'];
 		for (var i = 0; i <= table.game.potIndex; i++) {
 			showWinners(i, tm);
-			tm += 500;
+			tm += config.timeouts['show-winner-sidepot-interval'];
 		}
 		setTimeout(removeBusted, tm + 500);
 	}
@@ -196,12 +197,14 @@ function moveCallback() {
 		setTimeout(function() {
 			var winner = table.game.winners[0];
 			io.emit('handWinner', winner.seat, winner.won[0], winner.stack);
-		}, 500);
-		setTimeout(removeBusted, 1500);
+		}, config.timeouts['show-winner']);
+		setTimeout(removeBusted, config.timeouts['show-winner'] + 500);
 	}
 
 	if (table.game.request & Game.ALLIN) {
-		var tout = (table.game.phase == Game.PREFLOP) ? 2000 : 1500;
+		var tout = (table.game.phase == Game.PREFLOP) 
+			? config.timeouts['next-phase-allin-pre'] 
+			: config.timeouts['next-phase-allin'];
 		setTimeout(function() {
 			nextPhase();
 		}, tout);
@@ -314,7 +317,7 @@ io.on('connection', function(socket){
 		if (player) {
 			player.ready = true;
 			if (table.playersReady()) {
-				table.game = new Game(table.players, Options[structure]);
+				table.game = new Game(table.players, structures[structure]);
 				table.game.start();
 				io.emit('startGame', table.game.getStacks(), table.game.options.blinds[0], table.game.options.blinds[1], table.game.blindsUp, table.game.id);
 				setTimeout(function() {
